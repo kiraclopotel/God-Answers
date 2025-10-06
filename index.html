@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="God Answers">
+    <meta name="description" content="Receive divine guidance through sacred texts. Ask your question and receive spiritual wisdom.">
+    
+    <title>God Answers - Divine Guidance</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🙏</text></svg>">
+    
+    <style>
+        :root {
+            --bg-gradient-start: #1e3772; /* Darker blue for contrast */
+            --bg-gradient-mid: #2a5298;
+            --bg-gradient-end: #7e22ce;
+            --primary-color: #667eea;
+            --primary-dark: #764ba2;
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --text-tertiary: #718096;
+            --bg-white: #ffffff;
+            --bg-light: #f7fafc;
+            --bg-medium: #edf2f7;
+            --border-color: #e2e8f0;
+            --shadow: rgba(0,0,0,0.1);
+            --shadow-strong: rgba(0,0,0,0.4);
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient-start: #0f172a;
+            --bg-gradient-mid: #1e293b;
+            --bg-gradient-end: #312e81;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-tertiary: #94a3b8;
+            --bg-white: #1e293b;
+            --bg-light: #334155;
+            --bg-medium: #475569;
+            --border-color: #475569;
+            --shadow: rgba(0,0,0,0.3);
+            --shadow-strong: rgba(0,0,0,0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 50%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+            transition: background 0.3s ease;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.03) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .container {
+            background: var(--bg-white);
+            border-radius: 24px;
+            box-shadow: 0 25px 80px var(--shadow-strong);
+            max-width: 900px;
+            width: 100%;
+            padding: 50px;
+            text-align: center;
+            position: relative;
+            backdrop-filter: blur(10px);
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .top-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .icon-btn {
+            background: var(--bg-light);
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.3em;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-btn:hover {
+            transform: scale(1.1);
+            background: var(--bg-medium);
+        }
+
+        .icon-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Faith selector screen */
+        .faith-selector {
+            display: none;
+        }
+
+        .faith-selector.active {
+            display: block;
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        .faith-selector h2 {
+            color: var(--text-primary);
+            font-size: 2em;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .faith-selector p {
+            color: var(--text-tertiary);
+            font-size: 1.1em;
+            margin-bottom: 40px;
+        }
+
+        .faith-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .faith-card {
+            background: var(--bg-light);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 30px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .faith-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px var(--shadow);
+            border-color: var(--primary-color);
+        }
+
+        .faith-card.selected {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            border-color: var(--primary-dark);
+            color: white;
+        }
+
+        .faith-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .faith-name {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .faith-card.selected .faith-name {
+            color: white;
+        }
+
+        .remember-choice {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            color: var(--text-secondary);
+        }
+
+        .remember-choice input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .continue-btn {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .continue-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .continue-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Main app screen */
+        .main-app {
+            display: none;
+        }
+
+        .main-app.active {
+            display: block;
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        .app-header {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .change-faith-btn {
+            background: var(--bg-light);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            margin-bottom: 20px;
+        }
+
+        .change-faith-btn:hover {
+            background: var(--bg-medium);
+            transform: scale(1.05);
+        }
+
+        h1 {
+            color: var(--text-primary);
+            font-size: 3em;
+            margin-bottom: 15px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .current-faith {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.15em;
+            margin-bottom: 40px;
+            line-height: 1.7;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .ready-btn {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 22px 60px;
+            font-size: 1.4em;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ready-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .ready-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .ready-btn:hover:not(:disabled) {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+        }
+
+        .ready-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: none;
+            margin-top: 30px;
+            color: var(--primary-color);
+            font-size: 1.2em;
+            font-style: italic;
+        }
+
+        .loading.show {
+            display: block;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        .result {
+            margin-top: 40px;
+            padding: 40px;
+            background: var(--bg-light);
+            border-radius: 20px;
+            border-left: 5px solid var(--primary-color);
+            display: none;
+            box-shadow: 0 10px 30px var(--shadow);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .verse-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            opacity: 0;
+        }
+
+        .verse-actions.reveal {
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .action-btn {
+            background: var(--bg-white);
+            border: 2px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.95em;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn:hover {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .action-btn.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .reference {
+            font-size: 1.4em;
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 25px;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .reference.reveal {
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .verse-text {
+            font-family: 'Georgia', serif;
+            font-size: 1.5em;
+            line-height: 1.9;
+            color: var(--text-primary);
+            margin-bottom: 25px;
+            font-style: italic;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .verse-text.reveal {
+            animation: fadeInUp 1.5s ease-out 0.3s forwards;
+        }
+
+        .translation {
+            color: var(--text-tertiary);
+            font-size: 1em;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .translation.reveal {
+            animation: fadeInUp 1s ease-out 0.6s forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error {
+            color: #e53e3e;
+            margin-top: 20px;
+            display: none;
+            padding: 20px;
+            background: #fff5f5;
+            border-radius: 10px;
+            border-left: 4px solid #e53e3e;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .install-prompt {
+            position: fixed;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-white);
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px var(--shadow-strong);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            max-width: 90%;
+            transition: bottom 0.4s ease;
+            z-index: 1000;
+        }
+
+        .install-prompt.show {
+            bottom: 20px;
+        }
+
+        .install-prompt button {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .install-prompt .close-btn {
+            background: var(--bg-light);
+            color: var(--text-secondary);
+            padding: 8px 15px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 2.2em;
+            }
+
+            .faith-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .top-controls {
+                top: 10px;
+                right: 10px;
+            }
+
+            .icon-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1em;
+            }
+
+            .verse-text {
+                font-size: 1.3em;
+            }
+
+            .install-prompt {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--text-primary);
+            color: var(--bg-white);
+            padding: 15px 30px;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px var(--shadow-strong);
+            display: none;
+            z-index: 1001;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateX(-50%) translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            }
+        }
+
+        /* Guidance Counter */
+        .guidance-counter {
+            background: var(--bg-light);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 30px auto;
+            max-width: 500px;
+            border: 2px solid var(--border-color);
+        }
+
+        .counter-display {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .counter-number {
+            display: block;
+            font-size: 3em;
+            font-weight: bold;
+            color: var(--primary-color);
+            line-height: 1;
+        }
+
+        .counter-label {
+            display: block;
+            font-size: 0.95em;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        .earn-more {
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+
+        .earn-more p {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .earn-options {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .earn-options span {
+            background: var(--bg-white);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-content {
+            background: var(--bg-white);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-light);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--bg-medium);
+            transform: rotate(90deg);
+        }
+
+        .modal-content h2 {
+            color: var(--text-primary);
+            font-size: 2em;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .rule-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--bg-light);
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .rule-section h3 {
+            color: var(--primary-color);
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+
+        .rule-section p {
+            color: var(--text-primary);
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        .rule-section ul, .rule-section ol {
+            margin-left: 25px;
+            color: var(--text-primary);
+            line-height: 1.8;
+        }
+
+        .rule-section li {
+            margin-bottom: 8px;
+        }
+
+        .rule-section .emphasis {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-style: italic;
+        }
+
+        .rule-section.final {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            border: none;
+            text-align: center;
+        }
+
+        .rule-section .quote {
+            color: white;
+            font-size: 1.2em;
+            font-style: italic;
+            line-height: 1.8;
+            margin: 0;
+        }
+
+        #reflectionText {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1em;
+            color: var(--text-primary);
+            background: var(--bg-light);
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        #reflectionText:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .modal-btn {
+            padding: 12px 30px;
+            border-radius: 25px;
+            border: none;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-btn.primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .modal-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .modal-btn.secondary {
+            background: var(--bg-light);
+            color: var(--text-secondary);
+        }
+
+        .modal-btn.secondary:hover {
+            background: var(--bg-medium);
+        }
+
+        /* Authentication Input Styles */
+        .auth-input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1em;
+            background: var(--bg-light);
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+        
+        .auth-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        #authModalContent a {
+            color: var(--primary-color);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        
+        #authModalContent a:hover {
+            text-decoration: underline;
+        }
+
+        /* Share Card Styles */
+        .share-card-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: var(--bg-white);
+            border-radius: 15px;
+            border: 2px dashed var(--primary-color);
+        }
+
+        .share-card-label {
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .share-card {
+            background: var(--bg-light);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+            color: var(--text-primary);
+            overflow-x: auto;
+            white-space: pre;
+            margin: 0 0 15px 0;
+            text-align: center;
+        }
+
+        .copy-card-btn {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .copy-card-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .copy-card-btn:active {
+            transform: translateY(0);
+        }
+
+        .copy-card-btn.copied {
+            background: #48bb78;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-controls">
+            <button class="icon-btn" id="profileBtn" title="My Profile" aria-label="My Profile" onclick="openAuthModal()">
+                <span>👤</span>
+            </button>
+            <button class="icon-btn" id="rulesBtn" title="Divine Guidance Principles" aria-label="Rules" onclick="showRules()">
+                <span>📜</span>
+            </button>
+            <button class="icon-btn" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+                <span id="themeIcon">🌙</span>
+            </button>
+        </div>
+
+        <!-- Faith Selection Screen -->
+        <div class="faith-selector active" id="faithSelector">
+            <h2>Choose Your Faith</h2>
+            <p>Select your spiritual tradition to receive divine guidance</p>
+            
+            <div class="faith-grid">
+                <div class="faith-card" data-faith="christianity">
+                    <div class="faith-icon">✝️</div>
+                    <div class="faith-name">Christianity</div>
+                </div>
+                
+                <div class="faith-card" data-faith="islam">
+                    <div class="faith-icon">☪️</div>
+                    <div class="faith-name">Islam</div>
+                </div>
+                
+                <div class="faith-card" data-faith="judaism">
+                    <div class="faith-icon">✡️</div>
+                    <div class="faith-name">Judaism</div>
+                </div>
+                
+                <div class="faith-card" data-faith="hinduism">
+                    <div class="faith-icon">🕉️</div>
+                    <div class="faith-name">Hinduism</div>
+                </div>
+                
+                <div class="faith-card" data-faith="buddhism">
+                    <div class="faith-icon">☸️</div>
+                    <div class="faith-name">Buddhism</div>
+                </div>
+            </div>
+            
+            <div class="remember-choice">
+                <input type="checkbox" id="rememberFaith">
+                <label for="rememberFaith">Remember my faith</label>
+            </div>
+            
+            <button class="continue-btn" id="continueBtn" disabled>Continue</button>
+        </div>
+
+        <!-- Main App Screen -->
+        <div class="main-app" id="mainApp">
+            <div class="app-header">
+                <button class="change-faith-btn" onclick="changeFaith()">My Faith</button>
+                <h1>God Answers</h1>
+                <div class="current-faith" id="currentFaith"></div>
+            </div>
+            
+            <p class="subtitle">
+                The Divine knows all—past, present, and future.<br>
+                Hold your question in silence. Receive your answer.
+            </p>
+
+            <div class="guidance-counter" id="guidanceCounter">
+                <div class="counter-display">
+                    <span class="counter-number" id="remainingCount">3</span>
+                    <span class="counter-label">Divine Guidances Remaining Today</span>
+                </div>
+                <div class="earn-more" id="earnMore" style="display: none;">
+                    <p>🙏 Earn more guidances through spiritual engagement:</p>
+                    <div class="earn-options">
+                        <span>💭 Reflect (+2)</span>
+                        <span>📤 Share (+3)</span>
+                        <span>💾 Save (+1)</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="ready-btn" id="readyBtn" onclick="receiveAnswer()">
+                <span style="position: relative; z-index: 1;">I'm Ready</span>
+            </button>
+
+            <div class="loading" id="loading">
+                🙏 Seeking divine wisdom...
+            </div>
+
+            <div class="error" id="error">
+                Unable to receive guidance at this time. Please try again.
+            </div>
+
+            <div class="result" id="result">
+                <div class="verse-actions" id="verseActions">
+                    <button class="action-btn" id="reflectBtn" onclick="openReflection()">
+                        <span>💭</span>
+                        <span>Reflect</span>
+                    </button>
+                    <button class="action-btn" id="saveBtn" onclick="toggleSave()">
+                        <span id="saveIcon">💾</span>
+                        <span id="saveText">Save</span>
+                    </button>
+                    <button class="action-btn" onclick="shareVerse()">
+                        <span>📤</span>
+                        <span>Share</span>
+                    </button>
+                    <button class="action-btn" id="contextBtn" onclick="showContext()">
+                        <span>📖</span>
+                        <span>Context</span>
+                    </button>
+                </div>
+                <div class="reference" id="reference"></div>
+                <div class="verse-text" id="verseText"></div>
+                <div class="translation" id="translation"></div>
+                
+                <!-- Share Card Preview -->
+                <div class="share-card-container" id="shareCardContainer" style="display: none;">
+                    <div class="share-card-label">📤 Ready to Share:</div>
+                    <pre class="share-card" id="shareCard"></pre>
+                    <button class="copy-card-btn" onclick="copyShareCard()">
+                        <span id="copyIcon">📋</span> Copy to Share
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Install Prompt -->
+    <div class="install-prompt" id="installPrompt">
+        <span>📱 Install God Answers on your device</span>
+        <button onclick="installApp()">Install</button>
+        <button class="close-btn" onclick="closeInstallPrompt()">Later</button>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Rules Modal -->
+    <div class="modal" id="rulesModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeRules()">✕</button>
+            <h2>📜 Divine Guidance Principles</h2>
+            
+            <div class="rule-section">
+                <h3>🙏 How Divine Guidance Works</h3>
+                <p>When you seek answers from the Divine, you enter into a sacred conversation that transcends human logic. The passage you receive is not random—it is divinely ordained for your soul in this precise moment.</p>
+            </div>
+
+            <div class="rule-section">
+                <h3>💡 What You Need vs. What You Want</h3>
+                <p><strong>You may ask about one thing, but receive guidance about another.</strong></p>
+                <p>This is the Divine's wisdom at work. God does not always answer the question you <em>think</em> you're asking—He answers the question your <em>soul</em> is truly asking.</p>
+                <ul>
+                    <li>You might seek clarity on a decision, but receive wisdom about patience</li>
+                    <li>You might ask about a relationship, but receive guidance about self-love</li>
+                    <li>You might want direction, but receive comfort instead</li>
+                </ul>
+                <p class="emphasis">Trust that what you receive is what you need, even if it's not what you expected.</p>
+            </div>
+
+            <div class="rule-section">
+                <h3>🔍 The Art of Interpretation</h3>
+                <p>Sacred texts speak in metaphor, poetry, and timeless truth. Your task is not to take words literally, but to:</p>
+                <ul>
+                    <li><strong>Meditate</strong> on how the passage relates to your situation</li>
+                    <li><strong>Look for patterns</strong> and themes that resonate</li>
+                    <li><strong>Feel</strong> what stirs in your heart when you read</li>
+                    <li><strong>Apply</strong> the wisdom in a positive, constructive way</li>
+                </ul>
+                <p>If a passage seems harsh or confusing, ask: "What is the deeper lesson here? How can this guide me toward growth?"</p>
+            </div>
+
+            <div class="rule-section">
+                <h3>⏰ Why Daily Limits?</h3>
+                <p>Divine guidance is sacred—not casual. Each seeking should be intentional:</p>
+                <ul>
+                    <li><strong>3 guidances per day</strong> encourages thoughtful questions</li>
+                    <li><strong>Reflection earns more</strong> because contemplation deepens wisdom</li>
+                    <li><strong>Sharing earns more</strong> because spreading light multiplies it</li>
+                    <li><strong>Saving earns more</strong> because treasuring wisdom honors it</li>
+                </ul>
+                <p class="emphasis">Quality over quantity. One deeply considered passage is worth more than a hundred mindlessly received.</p>
+            </div>
+
+            <div class="rule-section">
+                <h3>🌟 Approaching with Reverence</h3>
+                <p>Before clicking "I'm Ready":</p>
+                <ol>
+                    <li>Take three deep breaths</li>
+                    <li>Center your mind and heart</li>
+                    <li>Formulate your question with clarity</li>
+                    <li>Open yourself to unexpected answers</li>
+                    <li>Trust in divine timing and wisdom</li>
+                </ol>
+            </div>
+
+            <div class="rule-section final">
+                <p class="quote">"The Divine speaks not in the language you expect, but in the language your soul understands. Listen not with your ears, but with your heart."</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reflection Modal -->
+    <div class="modal" id="reflectionModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeReflection()">✕</button>
+            <h2>💭 Reflect on This Guidance</h2>
+            <p style="margin-bottom: 20px; color: var(--text-secondary);">Share your thoughts, insights, or how this passage speaks to you. Meaningful reflection earns +2 guidances.</p>
+            
+            <textarea id="reflectionText" placeholder="What does this passage mean to you? How does it apply to your question? What wisdom do you find here?" rows="6"></textarea>
+            
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                <button class="modal-btn secondary" onclick="closeReflection()">Cancel</button>
+                <button class="modal-btn primary" onclick="submitReflection()">Submit Reflection (+2 🙏)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Authentication Modal -->
+    <div class="modal" id="authModal">
+        <div class="modal-content" id="authModalContent">
+            <button class="modal-close" onclick="closeAuthModal()">✕</button>
+            
+            <!-- Login View -->
+            <div id="loginView">
+                <h2>Welcome Back</h2>
+                <p style="margin-bottom: 20px; color: var(--text-secondary);">Sign in to access your profile.</p>
+                <input type="email" id="loginEmail" placeholder="Email" class="auth-input">
+                <input type="password" id="loginPassword" placeholder="Password" class="auth-input">
+                <button class="modal-btn primary" onclick="signInWithEmail()">Sign In</button>
+                <button class="modal-btn primary" onclick="signInWithGoogle()" style="margin-top: 10px; background: #4285f4;">
+                    Sign In with Google
+                </button>
+                <p style="margin-top: 20px; color: var(--text-secondary);">
+                    Don't have an account? <a href="#" onclick="showSignUpView(); return false;">Sign Up</a>
+                </p>
+            </div>
+
+            <!-- Sign Up View -->
+            <div id="signUpView" style="display: none;">
+                <h2>Create Account</h2>
+                <p style="margin-bottom: 20px; color: var(--text-secondary);">Join the community to track your journey.</p>
+                <input type="email" id="signUpEmail" placeholder="Email" class="auth-input">
+                <input type="password" id="signUpPassword" placeholder="Password (min 6 characters)" class="auth-input">
+                <button class="modal-btn primary" onclick="signUpWithEmail()">Sign Up</button>
+                <button class="modal-btn primary" onclick="signInWithGoogle()" style="margin-top: 10px; background: #4285f4;">
+                    Sign Up with Google
+                </button>
+                <p style="margin-top: 20px; color: var(--text-secondary);">
+                    Already have an account? <a href="#" onclick="showLoginView(); return false;">Sign In</a>
+                </p>
+            </div>
+
+            <!-- Profile View (shown when logged in) -->
+            <div id="profileView" style="display: none;">
+                <h2>My Profile</h2>
+                <p style="margin-bottom: 20px; color: var(--text-secondary);" id="userEmailDisplay"></p>
+                <div style="margin: 20px 0; padding: 20px; background: var(--bg-light); border-radius: 10px;">
+                    <p style="margin-bottom: 10px;"><strong>Your Points:</strong> <span id="userPointsDisplay">0</span> 🙏</p>
+                    <p><strong>Current Streak:</strong> <span id="userStreakDisplay">0 days</span> 🔥</p>
+                </div>
+                <button class="modal-btn secondary" style="margin-top: 30px;" onclick="logOut()">Sign Out</button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- START: FIREBASE SDK INTEGRATION -->
+    <!-- This is the 'compat' version, designed to be dropped into an HTML file easily. -->
+    
+    <!-- Firebase App (Core) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <!-- Firebase Authentication for user logins -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <!-- Firebase Firestore for the database -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <!-- Firebase Cloud Functions to run backend logic -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-functions-compat.js"></script>
+    <!-- Firebase Analytics for usage data -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics-compat.js"></script>
+
+    <script>
+      // Your web app's Firebase configuration from your Firebase project.
+      const firebaseConfig = {
+        apiKey: "AIzaSyDUP4qRd3nwepA3ffBqd8xCaGpxWmv2S0M",
+        authDomain: "askgod-60e95.firebaseapp.com",
+        projectId: "askgod-60e95",
+        storageBucket: "askgod-60e95.appspot.com", // Corrected field name
+        messagingSenderId: "300618214297",
+        appId: "1:300618214297:web:6f947b59d44ea81ed80108",
+        measurementId: "G-RZ13MDM0V1"
+      };
+
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      
+      // Initialize Firebase services and make them available globally for your app.js file
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+      const functions = firebase.functions();
+      const analytics = firebase.analytics(); // Initialize Analytics
+
+      console.log("Firebase has been initialized successfully.");
+    </script>
+    <!-- END: FIREBASE SDK INTEGRATION -->
+
+    <script src="app.js"></script>
+</body>
+</html>
