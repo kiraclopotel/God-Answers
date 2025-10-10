@@ -843,7 +843,7 @@ function generateShareCard(verse, faith) {
     
     // Footer with streak
     const streak = guidanceData.currentStreak > 0 ? `Day ${guidanceData.currentStreak} 🔥` : 'Day 1';
-    const footer = `${streak} • god-answers.app`;
+    const footer = `${streak} • www.askgod.pro`;
     const footerCentered = centerText(footer, frameWidth);
     
     // Assemble card
