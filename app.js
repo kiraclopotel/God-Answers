@@ -43,8 +43,8 @@ let currentVerse = null;
 let deferredPrompt = null;
 
 // Daily guidance tracking
-const DAILY_LIMIT = 10; // Maximum guidances per day
-const FREE_DAILY = 3;   // Free guidances at start of day
+const DAILY_LIMIT = 25; // Maximum guidances per day
+const FREE_DAILY = 10;   // Free guidances at start of day
 let guidanceData = {
     remaining: FREE_DAILY,
     lastReset: new Date().toDateString(),
