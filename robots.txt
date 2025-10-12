@@ -1,0 +1,103 @@
+# askgod.pro - Robots Exclusion Protocol
+# Updated: October 12, 2025
+# Purpose: Block AI crawlers from research experiment page
+
+# ============================================================================
+# AI COPYRIGHT EXPERIMENT - BLOCK ALL AI CRAWLERS FROM RESEARCH PAGE
+# ============================================================================
+
+# OpenAI Crawlers
+User-agent: GPTBot
+Disallow: /research-data.html
+
+User-agent: ChatGPT-User
+Disallow: /research-data.html
+
+# Anthropic (Claude) Crawlers
+User-agent: anthropic-ai
+Disallow: /research-data.html
+
+User-agent: Claude-Web
+Disallow: /research-data.html
+
+# Common Crawl (used by many AI companies)
+User-agent: CCBot
+Disallow: /research-data.html
+
+# Google AI Training
+User-agent: Google-Extended
+Disallow: /research-data.html
+
+# Facebook/Meta AI
+User-agent: FacebookBot
+Disallow: /research-data.html
+
+User-agent: meta-externalagent
+Disallow: /research-data.html
+
+# Amazon Alexa
+User-agent: Amazonbot
+Disallow: /research-data.html
+
+# Microsoft Bing AI
+User-agent: Bingbot
+Disallow: /research-data.html
+
+# Apple Intelligence
+User-agent: Applebot-Extended
+Disallow: /research-data.html
+
+# Perplexity AI
+User-agent: PerplexityBot
+Disallow: /research-data.html
+
+# Internet Archive (often used for AI training)
+User-agent: ia_archiver
+Disallow: /research-data.html
+
+# Generic AI scrapers
+User-agent: AI2Bot
+Disallow: /research-data.html
+
+User-agent: Bytespider
+Disallow: /research-data.html
+
+User-agent: Diffbot
+Disallow: /research-data.html
+
+User-agent: omgili
+Disallow: /research-data.html
+
+User-agent: omgilibot
+Disallow: /research-data.html
+
+# Cohere AI
+User-agent: cohere-ai
+Disallow: /research-data.html
+
+# YouBot
+User-agent: YouBot
+Disallow: /research-data.html
+
+# ============================================================================
+# ALLOW STANDARD SEARCH ENGINES (for main site functionality)
+# ============================================================================
+
+# Google (regular search)
+User-agent: Googlebot
+Allow: /
+Disallow: /research-data.html
+
+# Bing (regular search)
+User-agent: bingbot
+Allow: /
+Disallow: /research-data.html
+
+# ============================================================================
+# EXPERIMENT DOCUMENTATION
+# ============================================================================
+
+# Purpose: Test whether AI systems respect robots.txt + explicit on-page restrictions
+# Expected Behavior: AI systems should NOT access /research-data.html
+# Actual Behavior: To be documented during testing
+# Legal Significance: Demonstrates technical + legal barriers to AI access
